@@ -31,7 +31,7 @@ model.addHero = function(heroData, callback) {
 //         var data = fs.readdirSync(path.join(__dirname, 'hero.json'));
 //     } catch (error) {
 //         if(error) {
-//             throw error;
+//             return error;
 //         }
 //     }
 //     return data;
