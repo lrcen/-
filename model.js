@@ -133,3 +133,29 @@ model.doHeroEdit = function(hero, callback) {
         });
     })
 }
+
+//删除功能
+model.doHeroDelete = function(id, callback) {
+    fs.readFile(path.join(__dirname, 'hero.json'), 'utf-8', function(err, data) {
+        if(err) {
+            callback(err);
+        }
+
+        var heroObj = JSON.parse(data);
+
+        heroObj.heros.splice(+id - 1, 1); //数组下标从0开始
+        
+        heroObj.heros.forEach(function(value, index) {
+            if(value.id > +id) {
+                value.id -= 1;
+            }
+        });
+
+        fs.writeFile(path.join(__dirname, 'hero.json'), JSON.stringify(heroObj, null, '  '), function(err) {
+            if(err) {
+                callback(err);
+            }
+            callback(null);
+        })
+    })
+}

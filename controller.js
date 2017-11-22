@@ -151,6 +151,19 @@ controller.doHeroEdit = function(req, res) {
     })
 }
 
+//删除功能
+controller.doHeroDelete = function(id, res) {
+    model.doHeroDelete(id, function(err) {
+        if(err) {
+            res.end(JSON.stringify({
+                err_code: 500,
+                err_message: err.message
+            }))
+        }
+        res.render('heroList', 'hero');
+    })
+}
+
 //显示静态资源
 controller.showStaticSrc = function(req, res) {
     // 因为静态资源中可能有中文, 所以进行解码

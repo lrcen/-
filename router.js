@@ -18,12 +18,13 @@ module.exports = function(req, res) {
         controller.doHeroAdd(req, res);
     }else if(url.indexOf('/heroInfo') === 0 && method === 'GET') {
         // var id = Url.parse(url, true).query.id; // 会多次用到, 赋给req或者res
-
         controller.showHeroInfo(req.id, res);
     }else if(url.indexOf('/heroEdit') === 0 && method === 'GET') {
         controller.showHeroEdit(req.id, res);
     }else if(url === '/heroEdit' && method === 'POST') {
         controller.doHeroEdit(req, res);
+    }else if(url.indexOf('/heroDelete') === 0 && method === 'GET') {
+        controller.doHeroDelete(req.id, res);
     }else if(url.indexOf('/node_modules') === 0 || url.indexOf('/public') === 0) {
         controller.showStaticSrc(req, res);
     }
