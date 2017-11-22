@@ -1,8 +1,11 @@
+
+
 var path = require('path')
     ,fs = require('fs');
 
 var model = module.exports;
 
+// 增加功能
 model.addHero = function(heroData, callback) {
     // 1. 要添加数据, 首先要先获取所有的数据, 调用一个函数(此时还不知道要什么参数)
     getAllHeroData(function(err, data) {
@@ -59,7 +62,7 @@ function saveHeroData(data, heroData, callback) { //接收所有数据 和 要�
     allHeroData.heros.push(heroData);
 
     // 5.8 重新写入
-    fs.writeFile(path.join(__dirname, 'hero.json'), JSON.stringify(allHeroData), function(err) {
+    fs.writeFile(path.join(__dirname, 'hero.json'), JSON.stringify(allHeroData, null, '  '), function(err) {
         if(err) { //5.9 如果报错, 返回错误信息
             callback(err);
         }
@@ -68,4 +71,65 @@ function saveHeroData(data, heroData, callback) { //接收所有数据 和 要�
         callback(null);
     })
 
+}
+
+
+//查询功能
+
+model.showHeroInfo = function(id, callback) { // 根据id查询英雄, 该参数为字符串
+    fs.readFile(path.join(__dirname, 'hero.json'), 'utf-8', function(err, data) {
+        if(err) {
+            callback(err); // 返回错误信息
+        }
+
+        JSON.parse(data).heros.some(function(value) { // foreach 循环一定会对数组从头到尾进行遍历, 无法半途结束 , 较耗费性能
+            // some循环对数组进行从头到尾的遍历, 当返回true时循环结束, 性能更好
+            if(+id === value.id) {
+                callback(null, value);
+                return true;
+            }
+        })
+    });
+}
+
+// 编辑页面
+model.showHeroEdit = function(id, callback) {
+    fs.readFile(path.join(__dirname, 'hero.json'), 'utf8', function(err, data) {
+        if(err) {
+            callback(err);
+        }
+        JSON.parse(data).heros.some(function(value) { // 遍历heros数组
+            if(+id === value.id) { // 如果id相同, 就说明已经找到所要的数据
+                callback(null, value);
+                return true;
+            }
+        })
+    })
+}
+
+//完成编辑
+model.doHeroEdit = function(hero, callback) {
+    // 读取所有的数据
+    fs.readFile(path.join(__dirname, 'hero.json'), 'utf8', function(err, data) {
+        if(err) {
+            return callback(new Error(err));
+        }
+
+        var heroObj = JSON.parse(data);
+
+        hero.id = +hero.id; // 保存的id是字符串， 转为number
+        heroObj.heros.forEach(function(value, index) {
+            if(hero.id === value.id) {
+                heroObj.heros.splice(hero.id - 1, 1, hero);
+            }
+        })
+
+        //改完之后， 重新写会json文件中
+        fs.writeFile(path.join(__dirname, 'hero.json'), JSON.stringify(heroObj, null, '  '), function(err) {
+            if(err) {
+                callback(err);
+            }
+            callback(null);
+        });
+    })
 }

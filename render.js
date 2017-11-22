@@ -10,10 +10,14 @@ module.exports = function(res) {
         var json = jsonFileName + '.json';
         fs.readFile(path.join(__dirname, file), 'utf-8', function(err, data) {  //拿到html本文模板
             if(err) {
-                res.end('404 Not Found' + url);
+                return res.end('404 Not Found' + url);
             }
             // res.end(data);
-            if(jsonFileName) { //如果需要json, 就加载json进行渲染再返回渲染好的html
+            if(Object.prototype.toString.call(jsonFileName) == '[object Object]') { //如果传的就是一个对象, 那么就直接渲染
+                // console.log(jsonFileName);
+                var html = template.render(data, jsonFileName);
+                return res.end(html);
+            }else if(typeof jsonFileName === 'string') { //如果需要json, 就加载json进行渲染再返回渲染好的html
                 fs.readFile(path.join(__dirname, json),'utf-8', function(err, jsondata) {
                     if(err) {
                         res.end('404 Not Found' + url);
@@ -22,10 +26,10 @@ module.exports = function(res) {
                     
                     var html = template.render(data, JSON.parse(jsondata));
                     // console.log(html);
-                    res.end(html);
+                    return res.end(html);
                 })
             }else {// 否则直接返回读取到的html
-                res.end(data);
+                return res.end(data);
             }
         })
     }
